@@ -1,2 +1,9 @@
-import webbrowser
-webbrowser.open('https://www.youtube.com/')
+import requests
+
+def get_external_ip():
+    response = requests.get('https://httpbin.org/ip')
+    ip = response.json().get('origin', '')
+    return ip
+
+external_ip = get_external_ip()
+print(f"External IP Address: {external_ip}")
