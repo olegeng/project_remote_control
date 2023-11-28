@@ -1,23 +1,30 @@
-import socket, webbrowser, requests
-from tkinter import *
+import socket, webbrowser, requests, uuid
+# from tkinter import *
 response = requests.get('https://httpbin.org/ip') #Взяти зовнішній IP
-ip = response.json().get('origin', '')            # також
-server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server.bind((socket.gethostbyname_ex(socket.gethostname())[-1][-1], 1234)) #внутрішній IP, port
-server.listen() #Заставити сервер слухати команди
-print(socket.gethostbyname_ex(socket.gethostname())[-1][-1]) #Внутрішній IP в консоль
-#тут вставка з ткінтера
-#root.mainloop()
-while True:
-    user, adres = server.accept()
-    print('+!+')
+ip = response.json().get('origin', '')  # також
+print(ip)
+def s():
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.bind((socket.gethostbyname_ex(socket.gethostname())[-1][-1], 1234)) #внутрішній IP, port
+    server.listen(3) #Заставити сервер слухати команди
+    print(socket.gethostbyname_ex(socket.gethostname())[-1][-1]) #Внутрішній IP в консоль
+    print(hex(uuid.getnode())[2:])
+    #тут вставка з ткінтера
+    #root.mainloop()
     while True:
-        data = user.recv(1024).decode('utf-8').lower()
-        print('!!!')
-        if data=='youtube':
-            print('CONTACT')
-            webbrowser.open('https://www.youtube.com/')
-
+        user, adres = server.accept()
+        user.sendall(f'{ip}!{socket.gethostbyname_ex(socket.gethostname())[-1][-1]}!{hex(uuid.getnode())[2:]}'.encode('utf-8'))
+        print('+!+')
+        while True:
+            data = user.recv(1024).decode('utf-8').lower()
+            if data=='youtube':
+                print('CONTACT')
+                webbrowser.open('https://www.youtube.com/')
+while True:
+    try:
+        s()
+    except ConnectionAbortedError:
+        continue
 
 
 
