@@ -1,4 +1,4 @@
-import socket, webbrowser, requests, uuid
+import socket, webbrowser, requests, uuid, subprocess
 # from tkinter import *
 response = requests.get('https://httpbin.org/ip') #Взяти зовнішній IP
 ip = response.json().get('origin', '')  # також
@@ -17,12 +17,41 @@ def s():
         print('+!+')
         while True:
             data = user.recv(1024).decode('utf-8').lower()
-            if data=='youtube':
+            if '_$_' in data:                               #for files
+                                                            #to be continued
+                pass
+            elif '$_$' in data:                             #for webbrowser
                 print('CONTACT')
                 webbrowser.open('https://www.youtube.com/')
+            elif data=='/disconect':
+                return '200'
+            else:
+                print('###')
+                print(run_command(data))
+
+def run_command(command):
+    try:
+        # Викликайте команду за допомогою Popen
+        process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
+        # Очікуйте завершення процесу та отримайте вивід
+        output, error = process.communicate()
+        output = ' '.join(output.split())
+        output=output[output.index('<DIR>')::]
+        #output = ' '.join(output.split('<DIR>'))
+        # Перевірте код виходу
+        if process.returncode == 0:
+            return {"output": output, "error": error, "success": True}
+        else:
+            return {"output": output, "error": error, "success": False, "exit_code": process.returncode}
+
+    except Exception as e:
+        return {"output": None, "error": str(e), "success": False}
+
 while True:
     try:
-        s()
+        if s()=='200':
+            break
     except ConnectionAbortedError:
         continue
 
