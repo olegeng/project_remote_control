@@ -5,8 +5,8 @@ from pymongo import MongoClient
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 
-token = "6899953920:AAHhYeCEMHb3twGmCDcVuVmZym1AqvJeysE"
-bot=telebot.TeleBot(token)
+TOKEN = "6899953920:AAHhYeCEMHb3twGmCDcVuVmZym1AqvJeysE"
+bot=telebot.TeleBot(TOKEN)
 
 class Managing:
     def __init__(self):
