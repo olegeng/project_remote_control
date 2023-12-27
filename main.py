@@ -2,7 +2,6 @@
 import os, shutil, telebot, socket, requests#, qrcode
 from pymongo import MongoClient
 # from PIL import Image
-from telebot import types
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 
@@ -24,7 +23,6 @@ class Managing:
         self.command_to_send = message.text
         client.send(self.command_to_send.encode('utf-8'))#send command
         client.close()
-        return None
 
 
 def make_zip(directory_to_zip=f'{os.path.dirname(__file__)}/send_to_user', zip_file_path = f'{os.path.dirname(__file__)}/zipka.zip'):
@@ -38,46 +36,48 @@ def start_message(message):
     bot.send_message(message.chat.id, 'Let\'s do it!\n In order to connect you need to download and execute this one beneath')
     bot.send_message(message.chat.id, 'After that you need to read instruction from /help command')
     make_zip()
-    with open("./project_remote_control/zipka.zip", "rb") as misc:
+    with open("./zipka.zip", "rb") as misc:
         bot.send_document(message.chat.id,misc)
     
 @bot.message_handler(commands=['connect'])
 def register_newbie(message):
     client = MongoClient('localhost', 27017)
-    db = client['prc_data']
-    collection = db['users_data']
+    db = client['remote_control']
+    collection = db['users']
     k={'_id': message.from_user.id,
        'ext_ip': message.text[9::]}
     print(k)
-    result = collection.insert_one(k)
-    print(f"Inserted document with _id: {result.inserted_id}")
-    client.close()
+    # result = collection.insert_one(k)
+    # print(f"Inserted document with _id: {result.inserted_id}")
+    # cursor = collection.find(message.id)
+    # client.close()
+    print(collection.find({}, {'_id': message.from_user.id}))
 
 
-@bot.message_handler(commands=['commadd'])
-def explanation(message):
-    #bot.send_message(message.chat.id, 'Ok, gimme a command to add in your list.\nNAME: ')
-    data_of_command=message.text.split(' ')
-    print(data_of_command)
-    client = MongoClient('localhost', 27017)
-    db = client['prc_data']
-    collection = db['users_data']
-    try:
-        if data_of_command[2].upper()=='BROWSER':
-            k={
-                'name':data_of_command[1],
-                'file_or_link': f'{data_of_command[2].upper()}$_${data_of_command[3]}'}
-            print(k)
-        elif data_of_command[2].upper()=='FILE':
-            k={
-                'name':data_of_command[1],
-                'file_or_link': f'{data_of_command[2].upper()}_$_{data_of_command[3]}'}
-            print(k)
-        else:
-            bot.send_message(message.chat.id, 'Use "Broser" or "File"!')
-        
-    except ValueError or IndexError:
-        bot.send_message(message.chat.id, 'UNACCEPTABLE SYNTAX!\nUse this one: /commadd NAME: *** TYPE[FILE/BROWSER] BROWSERLINK_OR_NAME_OF_FILE')
+# @bot.message_handler(commands=['commadd'])
+# def explanation(message):
+#     #bot.send_message(message.chat.id, 'Ok, gimme a command to add in your list.\nNAME: ')
+#     data_of_command=message.text.split(' ')
+#     print(data_of_command)
+#     client = MongoClient('localhost', 27017)
+#     db = client['remote_control']
+#     collection = db['users']
+#     try:
+#         if data_of_command[2].upper()=='BROWSER':
+#             k={
+#                 'name':data_of_command[1],
+#                 'file_or_link': f'{data_of_command[2].upper()}$_${data_of_command[3]}'}
+#             print(k)
+#         elif data_of_command[2].upper()=='FILE':
+#             k={
+#                 'name':data_of_command[1],
+#                 'file_or_link': f'{data_of_command[2].upper()}_$_{data_of_command[3]}'}
+#             print(k)
+#         else:
+#             bot.send_message(message.chat.id, 'Use "Broser" or "File"!')
+#         update_query = {'$push': {collection: {'$command': }}}
+#     except ValueError or IndexError:
+#         bot.send_message(message.chat.id, 'UNACCEPTABLE SYNTAX!\nUse this one: /commadd NAME: *** TYPE[FILE/BROWSER] BROWSERLINK_OR_NAME_OF_FILE')
 
 
 @bot.message_handler(commands=['help'])
