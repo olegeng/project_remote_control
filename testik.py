@@ -17,12 +17,14 @@ def s():
         print('+!+')
         while True:
             data = user.recv(1024).decode('utf-8').lower()
+            print(data)
             if '_$_' in data:                               #for files
                                                             #to be continued
                 pass
             elif '$_$' in data:                             #for webbrowser
                 print('CONTACT')
-                webbrowser.open('https://www.youtube.com/')
+                data=data.split('$_$')
+                webbrowser.open(data[1])
             elif data=='/disconect':
                 return '200'
             else:
